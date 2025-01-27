@@ -29,7 +29,7 @@ This is an analysis pipeline for Bulk RNAseq data. We will re-analyze the mouse 
 
 # Recommended Readings
 
-This tutorial will not include essentials for RNAseq statistics. Your can read more from the following resources:
+This tutorial will not cover essentials for RNAseq statistics. Your can read more from the following resources:
 
 * [DESeq2 Vignette](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
 * [STAT 555 PSU course](https://online.stat.psu.edu/stat555/node/13/)
@@ -37,11 +37,12 @@ This tutorial will not include essentials for RNAseq statistics. Your can read m
 
 # Setup
 
-First we will load essential libraries and import the data. Note that we will need to install the following packages (DESeq2, PCAtools, EnhancedVolcano, pheatmap, fgsea, msigdbr, decoupleR, ashr)
+First we will load essential libraries and import the data.
 
-The goal of this section is to construct a numeric matrix where the rows represent gene names/ids and the columns represent samples and metadata dataframe to create DESeq2 object.
+The goal of this section is to construct a numeric matrix where the rows represent gene names/ids and the columns represent samples and metadata dataframe where the row names match the column names of the count matrix to create DESeq2 object.
 
 ```{r}
+## load libraries
 suppressPackageStartupMessages({
   library(DESeq2)
   library(tidyverse)
@@ -108,9 +109,10 @@ biplot(pca,
        legendPosition = 'right',
        legendLabSize = 7, legendIconSize = 4, legendTitleSize = 10)
 ```
+
 ## Correlation heatmap
 
-You can review this [tutorial](https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/) to learn how to customize the heatmap, including adding column and row annotations 
+You can review this [tutorial](https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/) to learn how to customize the heatmap using [pheatmap](https://github.com/raivokolde/pheatmap) R package, including adding column and row annotations 
 
 ```{r}
 ann <- data.frame(KO_status = metadata$IL33.Status,
@@ -121,11 +123,11 @@ pheatmap(cor(vst), annotation_col = ann, annotation_row = ann)
 
 # Differential Gene Expression (DGE) Analysis
 
-Here we will run the heart of RNAseq analysis. Defining differentially expressed genes (Up- and down-regulated genes). It is curcial to know how comparisons you are trying to make and construct the design matrix accordingly. You can review the guidelines for constructing a design matrix [here](https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html). 
+Here we will run the heart of RNAseq analysis. Defining differentially expressed genes (Up- and down-regulated genes). It is curcial to know how comparisons you are trying to make and construct the design matrix accordingly. Most of the RNAseq experiments are based on categorical data analysis (e.g., WT vs KO, Treated vs. Non-Treated), but you can use continuous variables (e.g., Glucose level, Drug Dosage). You can review the guidelines for constructing a design matrix [here](https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html).
 
 Here we will compare the Il33 KO to WT while accounting for other variables (Cell.Line, Treatment and batch). This can be conducted using one of two ways as follows:
 
-1) Setting WT as a reference, and comparing everything to it
+**1) Setting WT as a reference, and comparing everything to it**
 
 ```{r}
 dds$IL33.Status <- factor(dds$IL33.Status, levels = c('WT', 'KO'))
@@ -146,7 +148,9 @@ KO_v_wt <- lfcShrink(dds, coef = 'IL33.StatusKO', type = 'ashr', quiet = T) %>%
   rename(gene_id = Row.names) 
 ```
 
-2) Removing the intercept and setting up contrasts to compare different groups. Read more [here](https://www.r-bloggers.com/2024/05/a-guide-to-designs-and-contrasts-in-deseq2/)
+**2) Removing the intercept and setting up contrasts to compare different groups.**
+
+This is particularly beneficial when you have more than one level in the variable (e.g., WT, KO, DKO) and you want to have pairwise comparisons. Read more [here](https://www.r-bloggers.com/2024/05/a-guide-to-designs-and-contrasts-in-deseq2/)
 
 ```{r}
 design(dds) <- model.matrix(~ 0 + IL33.Status + Batch + Treatment, data = colData(dds))
@@ -170,11 +174,12 @@ Both approaches should have very similar results. We will save the results as a 
 
 ```{r}
 write.csv(KO_v_wt, "outputs/mouse_il33_v_wt_dge.csv", row.names = F)
-head(KO_v_wt)
+head(KO_v_wt[,-1])
 ```
+
 # Gene Set Enrichment Analysis (GSEA)
 
-Here we will run (GSEA)[https://www.pnas.org/doi/10.1073/pnas.0506580102] using Hallmark pathways from MSigDB[https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp#H]. Pay attention to changing the species to match the species of your data.
+Here we will run [GSEA](https://www.pnas.org/doi/10.1073/pnas.0506580102) using Hallmark pathways from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp#H). **Pay attention to changing the species to match the species of your data.**
 
 ```{r} 
 species <- 'Mus musculus'
@@ -245,6 +250,7 @@ plotGseaTable(hallmarks_pathways[topPathways],
               gsea_res,
               gseaParam=0.5)
 ```
+
 We can also visualize one pathway as follows
 
 ```{r}
