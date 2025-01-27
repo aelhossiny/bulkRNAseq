@@ -250,7 +250,6 @@ plotGseaTable(hallmarks_pathways[topPathways],
               gsea_res,
               gseaParam=0.5)
 ```
-
 We can also visualize one pathway as follows
 
 ```{r}

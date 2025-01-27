@@ -34,8 +34,8 @@ The data can be downloaded from
 
 # Recommended Readings
 
-This tutorial will not include essentials for RNAseq statistics. Your
-can read more from the following resources:
+This tutorial will not cover essentials for RNAseq statistics. Your can
+read more from the following resources:
 
 - [DESeq2
   Vignette](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
@@ -45,15 +45,15 @@ can read more from the following resources:
 
 # Setup
 
-First we will load essential libraries and import the data. Note that we
-will need to install the following packages (DESeq2, PCAtools,
-EnhancedVolcano, pheatmap, fgsea, msigdbr, decoupleR, ashr)
+First we will load essential libraries and import the data.
 
 The goal of this section is to construct a numeric matrix where the rows
 represent gene names/ids and the columns represent samples and metadata
-dataframe to create DESeq2 object.
+dataframe where the row names match the column names of the count matrix
+to create DESeq2 object.
 
 ``` r
+## load libraries
 suppressPackageStartupMessages({
   library(DESeq2)
   library(tidyverse)
@@ -125,13 +125,15 @@ biplot(pca,
        legendLabSize = 7, legendIconSize = 4, legendTitleSize = 10)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- --> \##
-Correlation heatmap
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+## Correlation heatmap
 
 You can review this
 [tutorial](https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/)
-to learn how to customize the heatmap, including adding column and row
-annotations
+to learn how to customize the heatmap using
+[pheatmap](https://github.com/raivokolde/pheatmap) R package, including
+adding column and row annotations
 
 ``` r
 ann <- data.frame(KO_status = metadata$IL33.Status,
@@ -147,15 +149,17 @@ pheatmap(cor(vst), annotation_col = ann, annotation_row = ann)
 Here we will run the heart of RNAseq analysis. Defining differentially
 expressed genes (Up- and down-regulated genes). It is curcial to know
 how comparisons you are trying to make and construct the design matrix
-accordingly. You can review the guidelines for constructing a design
-matrix
+accordingly. Most of the RNAseq experiments are based on categorical
+data analysis (e.g., WT vs KO, Treated vs. Non-Treated), but you can use
+continuous variables (e.g., Glucose level, Drug Dosage). You can review
+the guidelines for constructing a design matrix
 [here](https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html).
 
 Here we will compare the Il33 KO to WT while accounting for other
 variables (Cell.Line, Treatment and batch). This can be conducted using
 one of two ways as follows:
 
-1)  Setting WT as a reference, and comparing everything to it
+**1) Setting WT as a reference, and comparing everything to it**
 
 ``` r
 dds$IL33.Status <- factor(dds$IL33.Status, levels = c('WT', 'KO'))
@@ -180,9 +184,13 @@ KO_v_wt <- lfcShrink(dds, coef = 'IL33.StatusKO', type = 'ashr', quiet = T) %>%
   rename(gene_id = Row.names) 
 ```
 
-2)  Removing the intercept and setting up contrasts to compare different
-    groups. Read more
-    [here](https://www.r-bloggers.com/2024/05/a-guide-to-designs-and-contrasts-in-deseq2/)
+**2) Removing the intercept and setting up contrasts to compare
+different groups.**
+
+This is particularly beneficial when you have more than one level in the
+variable (e.g., WT, KO, DKO) and you want to have pairwise comparisons.
+Read more
+[here](https://www.r-bloggers.com/2024/05/a-guide-to-designs-and-contrasts-in-deseq2/)
 
 ``` r
 design(dds) <- model.matrix(~ 0 + IL33.Status + Batch + Treatment, data = colData(dds))
@@ -211,31 +219,25 @@ results as a csv file
 
 ``` r
 write.csv(KO_v_wt, "outputs/mouse_il33_v_wt_dge.csv", row.names = F)
-head(KO_v_wt)
+head(KO_v_wt[,-1])
 ```
 
-    ##              gene_id    baseMean log2FoldChange     lfcSE     pvalue      padj
-    ## 1               egfp   52.404144     0.01835905 0.2511604 0.80139134 0.9979924
-    ## 2 ENSMUSG00000000001 7973.141256     0.17936812 0.1905877 0.13272198 0.6359739
-    ## 3 ENSMUSG00000000028  425.362690     0.24824921 0.2380886 0.03812011 0.4038640
-    ## 4 ENSMUSG00000000031   19.674564     0.22507335 0.5498473 0.03161745 0.3765405
-    ## 5 ENSMUSG00000000037  163.227191    -0.11123294 0.1980364 0.33159105 0.8275319
-    ## 6 ENSMUSG00000000049    8.329456     0.02685919 0.2313623 0.76173908 0.9979924
-    ##   gene_symbol
-    ## 1        eGFP
-    ## 2       Gnai3
-    ## 3       Cdc45
-    ## 4         H19
-    ## 5       Scml2
-    ## 6        Apoh
+    ##      baseMean log2FoldChange     lfcSE     pvalue      padj gene_symbol
+    ## 1   52.404144     0.01835905 0.2511604 0.80139134 0.9979924        eGFP
+    ## 2 7973.141256     0.17936812 0.1905877 0.13272198 0.6359739       Gnai3
+    ## 3  425.362690     0.24824921 0.2380886 0.03812011 0.4038640       Cdc45
+    ## 4   19.674564     0.22507335 0.5498473 0.03161745 0.3765405         H19
+    ## 5  163.227191    -0.11123294 0.1980364 0.33159105 0.8275319       Scml2
+    ## 6    8.329456     0.02685919 0.2313623 0.76173908 0.9979924        Apoh
 
 # Gene Set Enrichment Analysis (GSEA)
 
 Here we will run
-(GSEA)\[<https://www.pnas.org/doi/10.1073/pnas.0506580102>\] using
-Hallmark pathways from
-MSigDB\[<https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp#H>\].
-Pay attention to changing the species to match the species of your data.
+[GSEA](https://www.pnas.org/doi/10.1073/pnas.0506580102) using Hallmark
+pathways from
+[MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/human/collection_details.jsp#H).
+**Pay attention to changing the species to match the species of your
+data.**
 
 ``` r
 species <- 'Mus musculus'
