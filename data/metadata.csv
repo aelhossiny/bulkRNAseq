@@ -1,17 +1,17 @@
-sample,input_glob,IL33 Status,Cell Line,Treatment,Batch
-7187-KD-2,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-2_*.fastq.gz,WT,GFP1,NT,3
-7187-KD-3,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-3_*.fastq.gz,WT,GFP1,NT,4
-7187-KD-4,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-4_*.fastq.gz,WT,GFP1,CM,1
-7187-KD-5,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-5_*.fastq.gz,WT,GFP1,CM,3
-7187-KD-6,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-6_*.fastq.gz,KO,KO14,NT,1
-7187-KD-7,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-7_*.fastq.gz,KO,KO14,NT,4
-7187-KD-9,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-9_*.fastq.gz,KO,KO14,CM,3
-7187-KD-10,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-10_*.fastq.gz,KO,KO14,CM,4
-7187-KD-12,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-12_*.fastq.gz,KO,KO16,NT,3
-7187-KD-13,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-13_*.fastq.gz,KO,KO16,NT,4
-7187-KD-15,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-15_*.fastq.gz,KO,KO16,CM,3
-7187-KD-16,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-16_*.fastq.gz,KO,KO16,CM,4
-7187-KD-17,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-17_*.fastq.gz,WT,GFP20,NT,1
-7187-KD-19,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-19_*.fastq.gz,WT,GFP20,NT,3
-7187-KD-20,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-20_*.fastq.gz,WT,GFP20,CM,1
-7187-KD-21,/nfs/turbo/agc-data/processing/watermelons/7187-KD/NovaA-622/fastqs_7187-KD/7187-KD-21_*.fastq.gz,WT,GFP20,CM,2
+sample,IL33 Status,Cell Line,Treatment,Batch
+7187-KD-2,WT,GFP1,NT,3
+7187-KD-3,WT,GFP1,NT,4
+7187-KD-4,WT,GFP1,CM,1
+7187-KD-5,WT,GFP1,CM,3
+7187-KD-6,KO,KO14,NT,1
+7187-KD-7,KO,KO14,NT,4
+7187-KD-9,KO,KO14,CM,3
+7187-KD-10,KO,KO14,CM,4
+7187-KD-12,KO,KO16,NT,3
+7187-KD-13,KO,KO16,NT,4
+7187-KD-15,KO,KO16,CM,3
+7187-KD-16,KO,KO16,CM,4
+7187-KD-17,WT,GFP20,NT,1
+7187-KD-19,WT,GFP20,NT,3
+7187-KD-20,WT,GFP20,CM,1
+7187-KD-21,WT,GFP20,CM,2
